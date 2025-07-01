@@ -1,0 +1,116 @@
+buildscript {
+    ext {
+        queryDslVersion = "5.0.0"
+        nettyVersion = "4.1.111.Final"
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.0'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+    // portone
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+
+    // env
+    implementation("me.paulschwarz:spring-dotenv:4.0.0")
+
+    //QueryDSL 추가
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}:jakarta"
+    annotationProcessor(
+            "jakarta.persistence:jakarta.persistence-api",
+            "jakarta.annotation:jakarta.annotation-api",
+            "com.querydsl:querydsl-apt:${queryDslVersion}:jakarta")
+
+    // portone
+    implementation("com.github.iamport:iamport-rest-client-java:0.2.23")
+
+    //JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+    //Spring Security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // jackson-databind-nullable
+    implementation 'org.openapitools:jackson-databind-nullable:0.2.1'
+
+    // AOP
+    implementation('org.springframework.boot:spring-boot-starter-aop')
+//    implementation group: 'com.google.guava', name: 'guava', version: '18.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.github.ben-manes.caffeine:caffeine'
+
+    // WebClient
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // WebFlux가 Netty를 내부에서 사용
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    /* >>> macOS-arm64 네이티브 DNS 라이브러리 추가 (runtimeOnly) */
+    runtimeOnly "io.netty:netty-resolver-dns-native-macos:${nettyVersion}:osx-aarch_64"
+
+    //batch, quartz
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    runtimeOnly 'com.h2database:h2'
+    implementation 'com.mchange:c3p0:0.9.5.5'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+sourceSets {
+
+    main {
+        java {
+            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
+        }
+    }
+}
+
+compileJava.dependsOn('clean')
