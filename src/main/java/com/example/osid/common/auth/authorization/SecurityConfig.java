@@ -13,6 +13,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.example.osid.common.auth.authentication.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -83,6 +88,24 @@ public class SecurityConfig {
 			);
 
 		return http.build();
+	}
+
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowedOrigins(List.of("http://127.0.0.1:5000",
+				"http://osid-frontend-bucket.s3-website.ap-northeast-2.amazonaws.com",
+				"https://osid-frontend-bucket.s3-website.ap-northeast-2.amazonaws.com",
+				"http://dxv1hxqgadwn9.cloudfront.net",
+				"https://dxv1hxqgadwn9.cloudfront.net")); // ✅ 여기도 명시
+		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+		config.setAllowedHeaders(List.of("*"));
+		config.setAllowCredentials(true);
+
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		source.registerCorsConfiguration("/api/**", config);
+
+		return source;
 	}
 
 }
