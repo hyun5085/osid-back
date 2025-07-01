@@ -31,6 +31,8 @@ public class SecurityConfig {
 			)
 			.authorizeHttpRequests(auth -> auth
 				// 1) 모두 가능
+ 				.requestMatchers("/actuator/**")
+                                .permitAll()
 				.requestMatchers("/payment-test.html")
 				.permitAll()
 				.requestMatchers("/api/my-ml-predict")
