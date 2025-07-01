@@ -1,0 +1,30 @@
+name: Deploy to EC2 via SSH
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 코드 체크아웃은 로컬 액션 용이지, EC2에선 git pull 할 거예요
+      - name: Checkout
+        uses: actions/checkout@v3
+
+        # SSH로 EC2에 접속해서 pull & 재배포
+      - name: SSH & Deploy
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_HOST }}        # ex: ec2-xx-xx-xx-xx.ap-northeast-2.compute.amazonaws.com
+          username: ${{ secrets.EC2_USER }}    # ex: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}      # PEM 파일 내용을 GitHub Secret에 저장
+          port: ${{ secrets.EC2_SSH_PORT || 22 }}
+          script: |
+            set -e
+            cd ~/osid-back/
+            git fetch origin main
+            git reset --hard origin/main
+            docker-compose pull --ignore-pull-failures
+            docker-compose up -d --build
