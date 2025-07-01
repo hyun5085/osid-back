@@ -1,6 +1,7 @@
 package com.example.osid.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -38,5 +39,15 @@ public class WebConfig implements WebMvcConfigurer {
 				"/api/dealers/signup",  // Dealer 회원가입
 				"/api/users/signup"     // User 회원가입
 			); // 필요에 따라 제외 경로 조정
+	}
+
+	@Override
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/api/**")
+				.allowedOriginPatterns("https://dxv1hxqgadwn9.cloudfront.net",         // ← CloudFront(추후 변경)
+						"http://osid-frontend-bucket.s3-website.ap-northeast-2.amazonaws.com") // ← S3 직접
+				.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+				.allowedHeaders("*")
+				.allowCredentials(true);
 	}
 }

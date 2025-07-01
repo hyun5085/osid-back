@@ -14,6 +14,8 @@ import com.example.osid.common.auth.authentication.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
+			.cors(withDefaults())
 			.csrf(csrf -> csrf.disable())
 			.sessionManagement(sm ->
 				sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
