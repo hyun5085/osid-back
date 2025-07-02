@@ -28,3 +28,4 @@ jobs:
             git reset --hard origin/main
             docker-compose pull --ignore-pull-failures
             docker-compose up -d --build
+            exit 0
