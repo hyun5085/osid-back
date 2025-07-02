@@ -148,7 +148,7 @@ python train.py
 
 * `mlp_single_custom.pkl` 생성
 
-## 프로젝트 구조
+## 프로젝트 구조.
 
 ```text
 ├─src/main/java/com/example/osid
