@@ -19,6 +19,9 @@ jobs:
           timeout: "30m"
           command_timeout: "30m"
           script: |
+            # 1) 디스크 정리
+            docker system prune -a --volumes -f
+            
             set -e
             cd /home/ec2-user/app/osid-back
             git fetch origin main
