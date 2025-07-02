@@ -1,32 +1,30 @@
-# ── 1단계: 빌드 환경 ──
+# ── 1단계: Java 빌드 ──
 FROM eclipse-temurin:17-jdk-jammy AS builder
 WORKDIR /app
 
-# Gradle 빌드
+# Gradle 설정 복사 및 빌드
 COPY gradlew settings.gradle build.gradle ./
 COPY gradle gradle
 RUN chmod +x gradlew
 COPY src src
 RUN ./gradlew clean bootJar -x test
 
-# ── 2단계: 런타임 환경 ──
+# ── 2단계: 런타임 ──
 FROM eclipse-temurin:17-jdk-jammy
-
-# 1) 파이썬 설치
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip && \
-    rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
-# 2) 자바 JAR 복사
+# (A) Python 설치 및 'python' 링크 생성
+RUN apt-get update && \
+    apt-get install -y python3 python3-pip && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
+    rm -rf /var/lib/apt/lists/*
+
+# (B) Java 애플리케이션 복사
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-# 3) 파이썬 스크립트·의존성 복사
+# (C) Python 스크립트와 라이브러리 설치
 COPY train.py requirements.txt ./
-
-# 4) pip로 파이썬 패키지 설치
 RUN pip3 install --no-cache-dir -r requirements.txt
 
-# 5) JVM 메모리 제한과 ENTRYPOINT
-ENTRYPOINT ["sh","-c","java -Xms256m -Xmx512m -jar /app/app.jar"]
+# 컨테이너 기동 시 Java 앱 실행
+ENTRYPOINT ["java","-Xms256m","-Xmx512m","-jar","/app/app.jar"]
