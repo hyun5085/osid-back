@@ -24,8 +24,10 @@ public class TrainingService {
         try {
             System.out.println("[스케줄러] train.py 실행 시작");
 
-            ProcessBuilder pb = new ProcessBuilder("/app/venv/bin/python", "train.py");
+            ProcessBuilder pb = new ProcessBuilder("python", "train.py");
+            pb.directory(new File("/app"));
             pb.redirectErrorStream(true);
+
             Process process = pb.start();
 
             BufferedReader reader = new BufferedReader(
